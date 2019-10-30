@@ -1,0 +1,39 @@
+<head>
+    <script src="./script.js"></script>
+</head>
+
+<body>
+    Back-end URL<span style="color: red;">*</span>:
+    <input id="back" type="text" />
+    Media URL<span style="color: red;">*</span>:
+    <input id="media" type="text" />
+    Name<span style="color: red;">*</span>:
+    <input id="name" type="text" />
+    Language:
+    <input id="language" type="text" />
+    Words:
+    <textarea id="speech"></textarea>
+    <br/>
+    <div style="padding-top: 10px;"></div>
+    Output:
+    <textarea id="out" style="width: 45%; height: 20%;"></textarea>
+    <button id="button" onclick="makeRequest()">Generate SRT</button>
+    <a id="link">Download file</a>
+    <br/><br/>
+    <ul>
+        <li>Back-end URL: Url of a server that accepts the following format:
+            <br/>
+            <pre>
+            fileName: name,
+            url: urlMedia,
+            language_code: language,
+            speechContexts: [
+                {
+                    "phrases": string[]
+                }
+            ]
+            </pre>
+        </li>
+        <li>Media URL: The URL of the multimedia you want to extract the subtitles from</li>
+    </ul>
+</body>
