@@ -1,0 +1,12 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    padding-top: 20px;
+}
+
+.output {
+    flex: 1;
+}

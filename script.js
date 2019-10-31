@@ -6,7 +6,8 @@ function makeRequest() {
     var name = document.getElementById('name').value;
     var language = document.getElementById('language').value;
     var speech = document.getElementById('speech').value;
-    var button = document.getElementById("button")
+    var onlyDownload = getDownloadCheck();
+    var button = getActionButton()
 
     if (urlBack) {
         urlBack = urlBack.trim()
@@ -36,7 +37,8 @@ function makeRequest() {
         if (this.readyState === 4) {
             document.getElementById('out').value = this.responseText;
             button.disabled = false;
-            if (this.status === 200) {
+            onlyDownload.disabled = false;
+            if (this.status === 200 && !getDownloadCheck().checked) {
                 file = new Blob([this.responseText], { type: "text/plain;charset=utf-8" })
                 link.href = URL.createObjectURL(file);
                 link.download = name + '.srt'
@@ -50,6 +52,7 @@ function makeRequest() {
         fileName: name,
         url: urlMedia,
         language_code: language,
+        onlyDownload: onlyDownload.checked,
         speechContexts: [
             {
                 "phrases": words
@@ -57,6 +60,23 @@ function makeRequest() {
         ]
     }
     button.disabled = true;
+    onlyDownload.disabled = true;
     request.open('POST', urlBack)
     request.send(JSON.stringify(requestPayload));
+}
+
+function getActionButton() {
+    return document.getElementById("button");
+}
+
+function getDownloadCheck() {
+    return document.getElementById('down');
+}
+
+function switchOnlyDownload() {
+    if (document.getElementById('down').checked) {
+        getActionButton().innerHTML = 'Trigger download and FLAC conversion';
+    } else {
+        getActionButton().innerHTML = 'Generate SRT';
+    }
 }

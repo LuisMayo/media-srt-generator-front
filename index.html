@@ -1,32 +1,43 @@
 <head>
     <script src="./script.js"></script>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 
-<body>
-    Back-end URL<span style="color: red;">*</span>:
-    <input id="back" type="text" />
-    Media URL<span style="color: red;">*</span>:
-    <input id="media" type="text" />
-    Name<span style="color: red;">*</span>:
-    <input id="name" type="text" />
-    Language:
-    <input id="language" type="text" />
-    Words:
-    <textarea id="speech"></textarea>
-    <br/>
-    <div style="padding-top: 10px;"></div>
-    Output:
-    <textarea id="out" style="width: 45%; height: 20%;"></textarea>
-    <button id="button" onclick="makeRequest()">Generate SRT</button>
-    <a id="link">Download file</a>
-    <br/><br/>
-    <ul>
+<body class="main-container">
+    <div class="row">
+        Back-end URL<span style="color: red;">*</span>:
+        <input id="back" type="text" />
+        Media URL<span style="color: red;">*</span>:
+        <input id="media" type="text" />
+    </div>
+    <div class="row">
+        Name<span style="color: red;">*</span>:
+        <input id="name" type="text" />
+        Language:
+        <input id="language" type="text" />
+        Words:
+        <textarea id="speech"></textarea>
+    </div>
+    <div class="row">
+        OnlyDownload: 
+        <input type="checkbox" id="down" onclick="switchOnlyDownload()"></input>
+    </div>
+    <br />
+    <div class="row output">
+        Output:
+        <textarea id="out" style="width: 45%; height: 20%;"></textarea>
+        <button id="button" onclick="makeRequest()">Generate SRT</button>
+        <a id="link">Download file</a>
+    </div>
+    <br /><br />
+    <ul class="row">
         <li>Back-end URL: Url of a server that accepts the following format:
-            <br/>
+            <br />
             <pre>
             fileName: name,
             url: urlMedia,
             language_code: language,
+            onlyDownload: boolean;
             speechContexts: [
                 {
                     "phrases": string[]
@@ -38,5 +49,6 @@
         <li>Name: FileName</li>
         <li>Language: LanguageCode</li>
         <li>Words: List of comma-separated values that are more likely to appear in your media</li>
+        <li>OnlyDownload: If set this flag may trigger MP3 download and FLAC conversion/upload on server, but no speech will be generated</li>
     </ul>
 </body>
