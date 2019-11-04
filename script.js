@@ -1,4 +1,6 @@
 var file;
+var finishedSets = new Set();
+lastPetition = 0;
 
 function makeRequest() {
     var urlBack = document.getElementById('back').value;
@@ -8,6 +10,7 @@ function makeRequest() {
     var speech = document.getElementById('speech').value;
     var onlyDownload = getDownloadCheck();
     var button = getActionButton()
+    var currentPetition = lastPetition++;
 
     if (urlBack) {
         urlBack = urlBack.trim()
@@ -25,7 +28,7 @@ function makeRequest() {
         speech = speech.trim()
     }
 
-    if (!urlBack  || !urlMedia || !name) {
+    if (!urlBack || !urlMedia || !name) {
         alert('There are some required fields not filled');
         return;
     }
@@ -33,11 +36,11 @@ function makeRequest() {
     var link = document.getElementById('link')
 
     var request = new XMLHttpRequest()
-    request.onreadystatechange = function () {
+    request.onreadystatechange = function() {
         if (this.readyState === 4) {
-            document.getElementById('out').value = this.responseText;
-            button.disabled = false;
-            onlyDownload.disabled = false;
+            finishedSets.add(currentPetition);
+            getOutputElement().value = this.responseText;
+            enablePage(button, onlyDownload);
             if (this.status === 200 && !getDownloadCheck().checked) {
                 file = new Blob([this.responseText], { type: "text/plain;charset=utf-8" })
                 link.href = URL.createObjectURL(file);
@@ -48,6 +51,14 @@ function makeRequest() {
             }
         }
     }
+
+    setTimeout(() => {
+        if (!finishedSets.has(currentPetition)) {
+            enablePage();
+            alert('Function Timeouted, please check the output box and follow the "for long clips" instructions');
+            getOutputElement().value = 'https://gist.github.com/LuisMayo/8e7b95dee866841b218e046ddebb4028';
+        }
+    }, 9.5 * 60 * 1000)
     var requestPayload = {
         fileName: name,
         url: urlMedia,
@@ -63,6 +74,21 @@ function makeRequest() {
     onlyDownload.disabled = true;
     request.open('POST', urlBack)
     request.send(JSON.stringify(requestPayload));
+}
+
+function getOutputElement() {
+    return document.getElementById('out');
+}
+
+function enablePage(button, onlyDownload) {
+    if (!onlyDownload) {
+        onlyDownload = getDownloadCheck();
+    }
+    if (!button) {
+        button = getActionButton();
+    }
+    button.disabled = false;
+    onlyDownload.disabled = false;
 }
 
 function getActionButton() {
