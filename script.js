@@ -1,3 +1,18 @@
+/** Copyright 2019 Luis Mayo(LuisMayo)
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 var file;
 var finishedSets = new Set();
 lastPetition = 0;
@@ -106,6 +121,7 @@ function switchOnlyDownload() {
     } else {
         getActionButton().innerHTML = 'Generate SRT';
     }
+    setHashOfCheck(document.getElementById('down').checked);
 }
 
 window.onload = function() {
@@ -113,16 +129,29 @@ window.onload = function() {
     for(const param of this.params.hash.entries()) {
         let item = document.getElementById(param[0]);
         if (item) {
-            item.value = param[1];
+            if (item.type === 'checkbox') {
+                item.checked = param[1] === 'true'
+            } else {
+                item.value = param[1];
+            }
         }
     }
     // Change URL to represent current status
     this.document.body.addEventListener('keyup', function (event) {
-        if(event.target.value) {
-            params.hash.set(event.target.id, event.target.value);
+        if (event.target.value) {
+            if (event.target.type === 'checkbox') {
+                return;
+            } else {
+                params.hash.set(event.target.id, event.target.value);
+            }
         } else {
             params.hash.remove(event.target.id);
         }
         document.location.hash = params.toString();
     });
 }
+function setHashOfCheck(event) {
+    params.hash.set('down', event ? 'true' : 'false');
+    document.location.hash = params.toString();
+}
+
