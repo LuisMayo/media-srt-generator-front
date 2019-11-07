@@ -1,6 +1,7 @@
 var file;
 var finishedSets = new Set();
 lastPetition = 0;
+var params = new UrlSearchParams()
 
 function makeRequest() {
     var urlBack = document.getElementById('back').value;
@@ -105,4 +106,23 @@ function switchOnlyDownload() {
     } else {
         getActionButton().innerHTML = 'Generate SRT';
     }
+}
+
+window.onload = function() {
+    // Load URL params
+    for(const param of this.params.hash.entries()) {
+        let item = document.getElementById(param[0]);
+        if (item) {
+            item.value = param[1];
+        }
+    }
+    // Change URL to represent current status
+    this.document.body.addEventListener('keyup', function (event) {
+        if(event.target.value) {
+            params.hash.set(event.target.id, event.target.value);
+        } else {
+            params.hash.remove(event.target.id);
+        }
+        document.location.hash = params.toString();
+    });
 }
