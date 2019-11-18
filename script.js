@@ -131,9 +131,10 @@ window.onload = function() {
         if (item) {
             if (item.type === 'checkbox') {
                 item.checked = param[1] === 'true'
+                switchOnlyDownload()
             } else {
                 item.value = param[1];
-            }
+            }  
         }
     }
     // Change URL to represent current status
@@ -154,4 +155,3 @@ function setHashOfCheck(event) {
     params.hash.set('down', event ? 'true' : 'false');
     document.location.hash = params.toString();
 }
-
