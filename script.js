@@ -74,7 +74,7 @@ function makeRequest() {
             alert('Function Timeouted, please check the output box and follow the "for long clips" instructions');
             getOutputElement().value = 'https://gist.github.com/LuisMayo/8e7b95dee866841b218e046ddebb4028';
         }
-    }, 9.5 * 60 * 1000)
+    }, 16 * 60 * 1000)
     var requestPayload = {
         fileName: name,
         url: urlMedia,
