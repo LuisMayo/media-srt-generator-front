@@ -13,7 +13,7 @@
 * limitations under the License.
 */
 
-var file;
+var srtFile;
 var finishedSets = new Set();
 lastPetition = 0;
 var params = new UrlSearchParams()
@@ -21,6 +21,7 @@ var params = new UrlSearchParams()
 function makeRequest() {
     var urlBack = document.getElementById('back').value;
     var urlMedia = document.getElementById('media').value;
+    var files = document.getElementById('file').files;
     var name = document.getElementById('name').value;
     var language = document.getElementById('language').value;
     var speech = document.getElementById('speech').value;
@@ -43,53 +44,68 @@ function makeRequest() {
     if (speech) {
         speech = speech.trim()
     }
-
-    if (!urlBack || !urlMedia || !name) {
+    if (!urlBack || !name) {
         alert('There are some required fields not filled');
+        return;
+    }
+    if (!urlMedia && (!files || files.length === 0)) {
+        alert('You need to specify input media');
         return;
     }
     var words = speech.split(',');
     var link = document.getElementById('link')
-
-    var request = new XMLHttpRequest()
-    request.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            finishedSets.add(currentPetition);
-            getOutputElement().value = this.responseText;
-            enablePage(button, onlyDownload);
-            if (this.status === 200 && !getDownloadCheck().checked) {
-                file = new Blob([this.responseText], { type: "text/plain;charset=utf-8" })
-                link.href = URL.createObjectURL(file);
-                link.download = name + '.srt'
-                alert('File ready');
-            } else {
-                alert('Something happened')
-            }
+    if (files && files.length > 0) {
+        var reader  = new FileReader();
+        reader.onloadend = function () {
+            sendRequest(reader.result);
         }
+        reader.readAsDataURL(files[0]);;
+    } else {
+        sendRequest();
     }
 
-    setTimeout(() => {
-        if (!finishedSets.has(currentPetition)) {
-            enablePage();
-            alert('Function Timeouted, please check the output box and follow the "for long clips" instructions');
-            getOutputElement().value = 'https://gist.github.com/LuisMayo/8e7b95dee866841b218e046ddebb4028';
-        }
-    }, 16 * 60 * 1000)
-    var requestPayload = {
-        fileName: name,
-        url: urlMedia,
-        language_code: language,
-        onlyDownload: onlyDownload.checked,
-        speechContexts: [
-            {
-                "phrases": words
+    function sendRequest(inputFile) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                finishedSets.add(currentPetition);
+                getOutputElement().value = this.responseText;
+                enablePage(button, onlyDownload);
+                if (this.status === 200 && !getDownloadCheck().checked) {
+                    srtFile = new Blob([this.responseText], { type: "text/plain;charset=utf-8" });
+                    link.href = URL.createObjectURL(srtFile);
+                    link.download = name + '.srt';
+                    alert('File ready');
+                }
+                else {
+                    alert('Something happened');
+                }
             }
-        ]
+        };
+        setTimeout(() => {
+            if (!finishedSets.has(currentPetition)) {
+                enablePage();
+                alert('Function Timeouted, please check the output box and follow the "for long clips" instructions');
+                getOutputElement().value = 'https://gist.github.com/LuisMayo/8e7b95dee866841b218e046ddebb4028';
+            }
+        }, 16 * 60 * 1000);
+        var requestPayload = {
+            fileName: name,
+            url: urlMedia,
+            encodedFile: inputFile,
+            language_code: language,
+            onlyDownload: onlyDownload.checked,
+            speechContexts: [
+                {
+                    "phrases": words
+                }
+            ]
+        };
+        button.disabled = true;
+        onlyDownload.disabled = true;
+        request.open('POST', urlBack);
+        request.send(JSON.stringify(requestPayload));
     }
-    button.disabled = true;
-    onlyDownload.disabled = true;
-    request.open('POST', urlBack)
-    request.send(JSON.stringify(requestPayload));
 }
 
 function getOutputElement() {
