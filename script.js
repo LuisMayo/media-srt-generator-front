@@ -154,19 +154,23 @@ window.onload = function() {
         }
     }
     // Change URL to represent current status
-    this.document.body.addEventListener('keyup', function (event) {
-        if (event.target.value) {
-            if (event.target.type === 'checkbox') {
-                return;
-            } else {
-                params.hash.set(event.target.id, event.target.value);
-            }
-        } else {
-            params.hash.remove(event.target.id);
-        }
-        document.location.hash = params.toString();
-    });
+    this.document.body.addEventListener('keyup', this.updateFieldOfURL);
+    this.document.body.addEventListener('click', this.updateFieldOfURL);
 }
+
+function updateFieldOfURL(event) {
+    if (event.target.value) {
+        if (event.target.type === 'checkbox') {
+            return;
+        } else {
+            params.hash.set(event.target.id, event.target.value);
+        }
+    } else {
+        params.hash.remove(event.target.id);
+    }
+    document.location.hash = params.toString();
+}
+
 function setHashOfCheck(event) {
     params.hash.set('down', event ? 'true' : 'false');
     document.location.hash = params.toString();
