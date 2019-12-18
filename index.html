@@ -20,7 +20,7 @@
         Name<span style="color: red;">*</span>:
         <input id="name" type="text" />
         Language:
-        <select id="language">
+        <select id="language" onchange="changeLanguageCombo(event)">
             <option value="af-ZA">Afrikaans (South Africa)</option>
             <option value="am-ET">Amharic (Ethiopia)</option>
             <option value="ar-DZ">Arabic (Algeria)</option>
@@ -141,7 +141,9 @@
             <option value="ur-PK">Urdu (Pakistan)</option>
             <option value="vi-VN">Vietnamese (Vietnam)</option>
             <option value="zu-ZA">Zulu (South Africa)</option>
+            <option value="other">Other</option>
         </select>
+        <input id="manualLanguage" style="display: none;"></input>
         Words:
         <textarea id="speech"></textarea>
     </div>
