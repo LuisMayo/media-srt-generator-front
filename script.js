@@ -24,6 +24,7 @@ function makeRequest() {
     var files = document.getElementById('file').files;
     var name = document.getElementById('name').value;
     var language = document.getElementById('language').value;
+    var manualLanguage = document.getElementById('manualLanguage').value;
     var speech = document.getElementById('speech').value;
     var onlyDownload = getDownloadCheck();
     var button = getActionButton()
@@ -40,6 +41,9 @@ function makeRequest() {
     }
     if (language) {
         language = language.trim()
+        if (language === 'other') {
+            language = (manualLanguage || '').trim();
+        }
     }
     if (speech) {
         speech = speech.trim()
@@ -145,6 +149,10 @@ window.onload = function() {
     for(const param of this.params.hash.entries()) {
         let item = document.getElementById(param[0]);
         if (item) {
+            if (param[0] === 'language' && param[1] === 'other') {
+                switchManualLanguage(param[1]);
+            }
+
             if (item.type === 'checkbox') {
                 item.checked = param[1] === 'true'
                 switchOnlyDownload()
@@ -154,19 +162,36 @@ window.onload = function() {
         }
     }
     // Change URL to represent current status
-    this.document.body.addEventListener('keyup', function (event) {
-        if (event.target.value) {
-            if (event.target.type === 'checkbox') {
-                return;
-            } else {
-                params.hash.set(event.target.id, event.target.value);
-            }
-        } else {
-            params.hash.remove(event.target.id);
-        }
-        document.location.hash = params.toString();
-    });
+    this.document.body.addEventListener('keyup', this.updateFieldOfURL);
+    this.document.body.addEventListener('click', this.updateFieldOfURL);
 }
+
+function changeLanguageCombo(event) {
+    switchManualLanguage(event.target.value);
+}
+
+function switchManualLanguage(value) {
+    if (value === 'other') {
+        document.getElementById('manualLanguage').style.display = 'inline-block';
+    }
+    else {
+        document.getElementById('manualLanguage').style.display = 'none';
+    }
+}
+
+function updateFieldOfURL(event) {
+    if (event.target.value) {
+        if (event.target.type === 'checkbox') {
+            return;
+        } else {
+            params.hash.set(event.target.id, event.target.value);
+        }
+    } else {
+        params.hash.remove(event.target.id);
+    }
+    document.location.hash = params.toString();
+}
+
 function setHashOfCheck(event) {
     params.hash.set('down', event ? 'true' : 'false');
     document.location.hash = params.toString();
