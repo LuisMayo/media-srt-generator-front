@@ -17,6 +17,21 @@ var srtFile;
 var finishedSets = new Set();
 lastPetition = 0;
 var params = new UrlSearchParams()
+var templateObject = JSON.parse(`{
+    "config": {
+        "encoding": "FLAC",
+        "language_code": "en-US",
+        "enableWordTimeOffsets": true,
+        "speechContexts": [
+            {
+                "phrases": []
+            }
+        ]
+    },
+    "audio": {
+        "uri": ""
+    }
+}`);
 
 function makeRequest() {
     var urlBack = document.getElementById('back').value;
@@ -81,7 +96,8 @@ function makeRequest() {
                     link.download = name + '.srt';
                     alert('File ready');
                 } else if (this.status === 200 && getDownloadCheck().checked) {
-                    getOutputElement().value = this.responseText;
+                    templateObject.audio.uri = this.responseText;
+                    getOutputElement().value = JSON.stringify(templateObject, null, 2);
                     alert('JSON ready');
                 } else {
                     alert('Something happened');
@@ -108,6 +124,8 @@ function makeRequest() {
                 }
             ]
         };
+        templateObject.config.language_code = language;
+        templateObject.config.speechContexts[0].phrases = words;
         disablePage();
         request.open('POST', urlBack);
         request.send(JSON.stringify(requestPayload));
