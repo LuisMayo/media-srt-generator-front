@@ -73,16 +73,19 @@ function makeRequest() {
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 finishedSets.add(currentPetition);
-                getOutputElement().value = this.responseText;
-                enablePage(button, onlyDownload);
+                enablePage();
                 if (this.status === 200 && !getDownloadCheck().checked) {
+                    getOutputElement().value = this.responseText;
                     srtFile = new Blob([this.responseText], { type: "text/plain;charset=utf-8" });
                     link.href = URL.createObjectURL(srtFile);
                     link.download = name + '.srt';
                     alert('File ready');
-                }
-                else {
+                } else if (this.status === 200 && getDownloadCheck().checked) {
+                    getOutputElement().value = this.responseText;
+                    alert('JSON ready');
+                } else {
                     alert('Something happened');
+                    getOutputElement().value = this.responseText;
                 }
             }
         };
@@ -105,8 +108,7 @@ function makeRequest() {
                 }
             ]
         };
-        button.disabled = true;
-        onlyDownload.disabled = true;
+        disablePage();
         request.open('POST', urlBack);
         request.send(JSON.stringify(requestPayload));
     }
@@ -116,15 +118,27 @@ function getOutputElement() {
     return document.getElementById('out');
 }
 
-function enablePage(button, onlyDownload) {
-    if (!onlyDownload) {
-        onlyDownload = getDownloadCheck();
+function enablePage() {
+    forAllInputs((item) => item.disabled = false);
+    document.getElementById('language').disabled = false;
+    document.getElementById('speech').disabled = false;
+    document.getElementById('button').disabled = false;
+}
+
+function disablePage() {
+    forAllInputs((item) => item.disabled = true);
+    document.getElementById('language').disabled = true;
+    document.getElementById('speech').disabled = true;
+    document.getElementById('button').disabled = true;
+}
+
+
+function forAllInputs(fn) {
+    const inputs = document.getElementsByTagName('input');
+    for (let i = 0; i< inputs.length; i++) {
+        const input = inputs.item(i);
+        fn(input);
     }
-    if (!button) {
-        button = getActionButton();
-    }
-    button.disabled = false;
-    onlyDownload.disabled = false;
 }
 
 function getActionButton() {
