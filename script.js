@@ -179,18 +179,20 @@ function switchOnlyDownload() {
 window.onload = function() {
     // Load URL params
     for(const param of this.params.hash.entries()) {
-        let item = document.getElementById(param[0]);
-        if (item) {
-            if (param[0] === 'language' && param[1] === 'other') {
-                switchManualLanguage(param[1]);
-            }
+        if(param[0] !== 'out') {
+            let item = document.getElementById(param[0]);
+            if (item) {
+                if (param[0] === 'language' && param[1] === 'other') {
+                    switchManualLanguage(param[1]);
+                }
 
-            if (item.type === 'checkbox') {
-                item.checked = param[1] === 'true'
-                switchOnlyDownload()
-            } else {
-                item.value = param[1];
-            }  
+                if (item.type === 'checkbox') {
+                    item.checked = param[1] === 'true'
+                    switchOnlyDownload()
+                } else {
+                    item.value = param[1];
+                }  
+            }
         }
     }
     // Change URL to represent current status
@@ -212,16 +214,18 @@ function switchManualLanguage(value) {
 }
 
 function updateFieldOfURL(event) {
-    if (event.target.value) {
-        if (event.target.type === 'checkbox') {
-            return;
+    if(event.target.id !== 'out') {
+        if (event.target.value) {
+            if (event.target.type === 'checkbox') {
+                return;
+            } else {
+                params.hash.set(event.target.id, event.target.value);
+            }
         } else {
-            params.hash.set(event.target.id, event.target.value);
+            params.hash.remove(event.target.id);
         }
-    } else {
-        params.hash.remove(event.target.id);
+        document.location.hash = params.toString();
     }
-    document.location.hash = params.toString();
 }
 
 function setHashOfCheck(event) {
